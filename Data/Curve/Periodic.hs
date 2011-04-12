@@ -8,6 +8,7 @@ import Data.Curve.Util
 
 import Data.VectorSpace
 
+{- TODO: Reinstate
 data (FunctionBounds a) => Periodic a = Periodic a (DomainBounds a)
 
 -- Make offset smallest possible positive.
@@ -39,15 +40,6 @@ instance (FunctionBounds a) => FunctionBounds (Periodic a) where
 mapPeriodic :: (Curve a) => (a -> a) -> (Periodic a) -> (Periodic a)
 mapPeriodic f (Periodic x ivl) = Periodic (f x) ivl
 
-{-
-zipBeats :: (Curve a) => (a -> a -> a) -> (Periodic (Pw a)) -> (Periodic (Pw a)) -> (Periodic (Pw a))
-zipBeats f (Periodic x xivl) (Periodic y yivl) = Periodic (concatPw segs) ivl
-  where ivl = offsetInterval (from xivl) (Interval 0 period)
-        period = 1 / abs (1 / extent xivl - 1 / extent yivl)
-        offsets = map (ivlWrap xivl) $ iterate (+(extent yivl)) 0
-        segs = 
--}
-
 instance (FunctionBounds a) => AdditiveGroup (Periodic (Pw a))
     zeroV = Periodic zeroV unitivl
     (^+^) = zipBeats (^+^) ()
@@ -76,6 +68,17 @@ instance (Curve a) => Rootable a where
 
 instance (DomainBounds a) => DomainBounds (Periodic a)
     domainBounds (Periodic x rep) y = tesselate rep (domainBounds x y)
+
+-}
+
+{-
+zipBeats :: (Curve a) => (a -> a -> a) -> (Periodic (Pw a)) -> (Periodic (Pw a)) -> (Periodic (Pw a))
+zipBeats f (Periodic x xivl) (Periodic y yivl) = Periodic (concatPw segs) ivl
+  where ivl = offsetInterval (from xivl) (Interval 0 period)
+        period = 1 / abs (1 / extent xivl - 1 / extent yivl)
+        offsets = map (ivlWrap xivl) $ iterate (+(extent yivl)) 0
+        segs = 
+-}
 
 {- TODO need portion type
 instance (Portionable a) => Portionable (Periodic a) where

@@ -61,9 +61,9 @@ instance (Num a) => ToBezier (Bezier a) where
 instance (RealFloat a) => ToSBasis (Bezier a) where
     type SBasisType (Bezier a) = SBasis a
     toSBasis b = helper (order b) (bezierCoefs b)
-      where helper 0 _ = SBasis []
-            helper 1 (x:xs) = SBasis [Linear x x]
-            helper 2 (x:y:xs) = SBasis [Linear x y]
+      where helper (-1) _ = SBasis []
+            helper 0 (x:xs) = SBasis [Linear x x]
+            helper 1 (x:y:xs) = SBasis [Linear x y]
             helper i xs = up ^*^ helper (i - 1) xs ^+^
                           dn ^*^ helper (i - 1) (tail xs)
             up = SBasis [Linear 0 1]

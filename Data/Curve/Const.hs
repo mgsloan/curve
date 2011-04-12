@@ -1,3 +1,16 @@
+-----------------------------------------------------------------------------
+-- |
+-- Module      :  Data.Curve.Const
+-- Copyright   :  (c) 2011 Michael Sloan 
+-- License     :  BSD-style (see the LICENSE file)
+--
+-- Maintainer  :  Michael Sloan <mgsloan@gmail.com>
+-- Stability   :  experimental
+-- Portability :  GHC only
+--
+-- 1D constant curve representation.  Very trivial instances, represents
+-- invariably returning the same value.  Useful as a curve to convert
+-- from.
 
 {-# LANGUAGE TypeFamilies, FlexibleContexts, UndecidableInstances,
 MultiParamTypeClasses #-} 

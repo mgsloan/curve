@@ -1,3 +1,15 @@
+-----------------------------------------------------------------------------
+-- |
+-- Module      :  Data.Curve.Function
+-- Copyright   :  (c) 2011 Michael Sloan 
+-- License     :  BSD-style (see the LICENSE file)
+--
+-- Maintainer  :  Michael Sloan <mgsloan@gmail.com>
+-- Stability   :  experimental
+-- Portability :  GHC only
+--
+-- Curve instances for the standard function type (a -> b)
+
 
 {-# LANGUAGE TypeFamilies, FlexibleContexts, UndecidableInstances,
 FlexibleInstances, MultiParamTypeClasses, ScopedTypeVariables #-} 

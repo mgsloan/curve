@@ -1,0 +1,41 @@
+Name:                curve
+Version:             0.0.1
+Cabal-Version:       >= 1.2
+Synopsis:            Geometry library focused on the representation of continuous curves
+Category:            math, graphics, numerical
+Description:         
+License:             BSD3
+License-file:        LICENSE
+Author:              Michael Sloan
+Maintainer:          Michael Sloan <mgsloan@gmail.com>
+Stability:           experimental
+Build-Type:          Simple
+Extra-Source-Files:  Tests.hs
+
+-- test-suite TestSuite
+--   type: exitcode-stdio-1.0
+--   main-is: Tests.hs
+--   build-depends:     QuickCheck, quickcheck-poly, random
+
+Library
+  Extensions:        TypeFamilies, MultiParamTypeClasses,
+                     FlexibleInstances, UndecidableInstances,
+                     RankNTypes, TupleSections, ScopedTypeVariables
+  Build-Depends:     base, array, cairo, vector-space >= 0.7.2, lattices,
+                     rounding, numeric-extras, roots
+  Exposed-Modules:
+    Data.Curve
+    Data.Curve.Bezier
+    Data.Curve.Classes
+    Data.Curve.Const
+    Data.Curve.Conversions
+    Data.Curve.D2
+    Data.Curve.Draw
+    Data.Curve.Function
+    Data.Curve.Interval
+    Data.Curve.Linear
+    Data.Curve.Math
+    Data.Curve.Piecewise
+    Data.Curve.Poly
+    Data.Curve.SBasis
+    Data.Curve.Util

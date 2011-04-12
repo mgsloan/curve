@@ -1,4 +1,4 @@
------------------------------------------------------------------------------
+----------------------------------------------------------------------------
 -- |
 -- Module      :  Data.Curve.Classes
 -- Copyright   :  (c) 2011 Michael Sloan 
@@ -8,7 +8,7 @@
 -- Stability   :  experimental
 -- Portability :  GHC only
 --
--- 
+-- Classes defining various concepts which apply to continuous curves.
 
 {-# LANGUAGE TypeFamilies, MultiParamTypeClasses, FlexibleContexts,
 UndecidableInstances, FlexibleInstances #-} 
@@ -77,7 +77,7 @@ class IsZero a where
 instance IsZero Float  where isZero = (0==)
 instance IsZero Double where isZero = (0==)
 
--- Class representing the ability to query bounds of the codomain, given
+-- | Class representing the ability to query bounds of the codomain, given
 -- bounds of the domain.  In other words, this allows you to answer the
 -- question "what are the range of values given this range of inputs?".
 class (Curve a,  Predicate (CodomainBounds a)) => FunctionBounds a where
@@ -149,6 +149,11 @@ class (Multiplicable a) => Dividable a where
 -- | Yields a representation of the output-offset of a curve.
 class (Curve a) => Offsetable a where
     offset :: Codomain a -> a -> a
+
+--TODO: determine best interface.  might want to yield bracketing 
+-- ((Domain a, Codomain a), (Domain a, Codomain a))
+--class (Curve a) => Discont a where
+--    discont :: a -> [Domain a]
 
 class ToSBasis a where
     type SBasisType a

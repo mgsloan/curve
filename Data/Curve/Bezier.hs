@@ -18,19 +18,23 @@ import qualified Data.Curve.Interval as I
 import Data.Curve.Linear
 import Data.Curve.Util
 
+import Control.Arrow
 import qualified Data.Array as A
 import Numeric.Rounding
 import Data.VectorSpace
 
 data Bezier a = Bezier { bezierCoefs :: [a] } deriving (Show)
 
-order = length . bezierCoefs
+bezierFromPoints :: [(a, a)] -> (Bezier a, Bezier a)
+bezierFromPoints = mapT Bezier . (map fst &&& map snd)
+
+order = subtract 1 . length . bezierCoefs
 
 -- TODO: is this efficient?
-deCasteljau (Bezier xs) t = coefs
-  where n = length xs
-        coefs = A.listArray ((0,0),(n-1,n-1)) $ map de' [(i,j) | i<-[0..n-1], j<-[0..n-1]]
-        de' (i, 0) = xs !! i
+deCasteljau b t = coefs
+  where n = order b
+        coefs = A.listArray ((0,0),(n,n)) $ map de' [(i,j) | i<-[0..n], j<-[0..n]]
+        de' (i, 0) = bezierCoefs b !! i
         de' (i, j) = (((1-t)*) $ coefs A.! (i,   j-1)) +
                      ((t*)     $ coefs A.! (i+1, j-1))
 
@@ -58,7 +62,7 @@ instance (Num a) => Curve (Bezier a) where
     at (Bezier []) _ = 0
     at b 0 = head . bezierCoefs $ b
     at b 1 = last . bezierCoefs $ b
-    at b t = (deCasteljau b t) A.! (0, n - 1)
+    at b t = (deCasteljau b t) A.! (0, n)
       where n = order b
 
 instance (IsFinite a) => IsFinite (Bezier a) where
