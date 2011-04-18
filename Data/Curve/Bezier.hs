@@ -43,14 +43,13 @@ splitBezier b t = (Bezier [de A.! (0, i)     | i <- [0..n-1]],
   where de = deCasteljau b t
         (_, (_, n)) = A.bounds de
 
--- lift 1
-bezmap :: (a -> a) -> Bezier a -> Bezier a
-bezmap f (Bezier xs) = Bezier (map f xs)
-
 {- old version:
 coeffs = zipWith (*) (sunfoldr (*t) 1)
                      (1.0 : zipWith (\x y -> fromIntegral x / fromIntegral y) [n,n-1..0] [1..n])
 -}
+
+instance Functor Bezier where
+    fmap f (Bezier xs) = Bezier (map f xs)
 
 instance (Num a) => Curve (Bezier a) where
     type Domain (Bezier a) = a
@@ -85,20 +84,22 @@ instance (Precision a) => Portionable (Bezier a) where
 instance (Num a) => AdditiveGroup (Bezier a) where
     zeroV = (Bezier [])
     (^+^) = undefined
-    negateV = bezmap negate
+    negateV = fmap negate
 
 instance (Num a) => VectorSpace (Bezier a) where
     type Scalar (Bezier a) = a
-    (*^) s = bezmap (s*)
+    (*^) s = fmap (s*)
 
-instance (Fractional a) => Integrable (Bezier a) where
+instance (Num a) => Differentiable (Bezier a) where
     derivative (Bezier [x, y]) = Bezier [y - x]
     derivative (Bezier xs) = Bezier
       . map ((fromIntegral $ length xs - 1)*)
       . zipWith (-) xs $ tail xs
+
+instance (Fractional a) => Integrable (Bezier a) where
     integral (Bezier xs) = Bezier . tail
       . scanl (\a -> (a+) . (/(fromIntegral $ length xs))) 0 $ xs
 
 instance (Num a) => Offsetable (Bezier a) where
     offset x (Bezier []) = Bezier [x]
-    offset x b = bezmap (+x) b
+    offset x b = fmap (+x) b

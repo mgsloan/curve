@@ -18,6 +18,7 @@ import Data.Curve.Bezier
 import Data.Curve.Classes
 import Data.Curve.Const
 import Data.Curve.Linear
+import Data.Curve.Piecewise
 import Data.Curve.Poly
 import Data.Curve.SBasis
 import Data.Curve.Util
@@ -100,3 +101,20 @@ instance (ToSBasis a) => ToSBasis (a, a) where
 instance (ToPoly a) => ToPoly (a, a) where
     type PolyType   (a, a) = (PolyType a,   PolyType a)
     toPoly = mapT toPoly
+
+-- Piecewise conversion instances
+
+instance (ToBezier a, Curve a, Curve (BezierType a), Domain (BezierType a) ~ Domain a) 
+  => ToBezier (Pw a) where
+    type BezierType (Pw a) = Pw (BezierType a)
+    toBezier = mapPw toBezier
+
+instance (ToSBasis a, Curve a, Curve (SBasisType a), Domain (SBasisType a) ~ Domain a)
+  => ToSBasis (Pw a) where
+    type SBasisType (Pw a) = Pw (SBasisType a)
+    toSBasis = mapPw toSBasis
+
+instance (ToPoly a, Curve a, Curve (PolyType a), Domain (PolyType a) ~ Domain a)
+  => ToPoly (Pw a) where
+    type PolyType (Pw a) = Pw (PolyType a) 
+    toPoly = mapPw toPoly

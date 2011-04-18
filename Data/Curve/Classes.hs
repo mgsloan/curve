@@ -23,17 +23,20 @@ module Data.Curve.Classes
   , InverseBounds(..)
   , Rootable(..)
   , Invertible(..)
+  , Differentiable(..)
   , Integrable(..)
   , Composable(..)
   , Multiplicable(..)
   , Dividable(..)
   , Offsetable(..)
+  , Pow(..)
   , ToSBasis(..)
   , ToBezier(..)
   , ToPoly(..)
   ) where
 
 import Algebra.Lattice
+import Data.Curve.Util (nest)
 
 -- | General class for objects which have predicate-like properties, i.e.
 -- implement a set of "Element a".
@@ -91,7 +94,7 @@ class (Curve a,  Predicate (CodomainBounds a)) => FunctionBounds a where
 
 -- | Represents the ability to extract a portion of the curve, with the
 -- same type as a result.  This can be conceptualized as remapping &
--- cropping the  passed range to the full domain of the result
+-- cropping the passed range to the full, unit domain of the result
 class (Curve a) => Portionable a where
     portion :: DomainBounds a -> a -> a
 
@@ -118,14 +121,19 @@ class (Curve a) => Invertible a where
     type InverseType a
     inverse :: a -> InverseType a
 
--- | Represents the ability to perform closed integral / derivative.
-class (Curve a) => Integrable a where
-    integralOrder, derivativeOrder :: Int -> a -> a
-    integral, derivative :: a -> a
-    integralOrder n   = derivativeOrder (negate n)
-    derivativeOrder n = integralOrder (negate n)
-    integral   = integralOrder 1
+-- | Represents the ability to perform closed derivative.
+class (Curve a) => Differentiable a where
+    derivativeOrder :: Int -> a -> a
+    derivativeOrder n = nest n derivative
+    derivative :: a -> a
     derivative = derivativeOrder 1
+
+-- | Represents the ability to perform closed integral / anti-derivative.
+class (Differentiable a) => Integrable a where
+    integralOrder :: Int -> a -> a
+    integralOrder n = nest n integral 
+    integral :: a -> a
+    integral = integralOrder 1
 
     --integralOrder n = nest n integral
     --derivativeOrder n = nest n derivative
@@ -146,9 +154,17 @@ class (Multiplicable a) => Dividable a where
     (^/^) :: a -> a -> a
     a ^/^ b = a ^*^ (reciprocal b)
 
+instance Multiplicable Float  where (^*^) = (*)
+instance Dividable     Float  where (^/^) = (/)
+instance Multiplicable Double where (^*^) = (*)
+instance Dividable     Double where (^/^) = (/)
+
 -- | Yields a representation of the output-offset of a curve.
 class (Curve a) => Offsetable a where
     offset :: Codomain a -> a -> a
+
+class (Curve a) => Pow a where
+    pow :: Codomain a -> a -> a
 
 --TODO: determine best interface.  might want to yield bracketing 
 -- ((Domain a, Codomain a), (Domain a, Codomain a))

@@ -60,15 +60,17 @@ instance (Rootable a) => Rootable (a, a) where
 instance (Invertible a) => Invertible (a, a) where
  -}
 
-instance (Integrable a) => Integrable (a, a) where
-  integral          = mapT integral
+instance (Differentiable a) => Differentiable (a, a) where
   derivative        = mapT derivative
-  integralOrder n   = mapT (integralOrder n)
   derivativeOrder n = mapT (derivativeOrder n)
 
-instance Composable a b => Composable (a, a) (b, b) where
-  type CompositionType (a, a) (b, b) = (CompositionType a b, CompositionType a b)
-  compose = zipT compose
+instance (Integrable a) => Integrable (a, a) where
+  integral          = mapT integral
+  integralOrder n   = mapT (integralOrder n)
+
+instance Composable a b => Composable (a, a) b where
+  type CompositionType (a, a) b = (CompositionType a b, CompositionType a b)
+  compose t x = mapT (`compose` x) t
 
 instance Multiplicable a => Multiplicable (a, a) where
   (^*^) = zipT (^*^)
@@ -83,3 +85,10 @@ instance Offsetable a => Offsetable (a, a) where
 dot :: (Multiplicable a, AdditiveGroup a) => 
   (a, a) -> (a, a) -> a
 dot a b = foldT (^+^) (a ^*^ b)
+
+rotCW, rotCCW :: (AdditiveGroup a) => (a, a) -> (a, a)
+rotCW (x, y) = (negateV y, x)
+rotCCW (x, y) = (y, negateV x)
+
+
+--rot :: (VectorSpace a) => Scalar a -> (a, a)

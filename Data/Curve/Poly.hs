@@ -67,15 +67,17 @@ instance (Num a) => Offsetable (Poly a) where
 instance (Precision a) => Rootable (Poly a) where
     rootsAt f = rootsAt $ at f
 
-instance (RealFloat a) => Integrable (Poly a) where
-    integral = undefined
-    derivative = undefined
+instance (Num a) => Differentiable (Poly a) where
+    derivative = Poly . zipWith (\i -> (fromIntegral i *)) [1..] . tail . polyCoefs
 
+instance (RealFloat a) => Integrable (Poly a) where
+    integral = Poly . (0:) . zipWith (\i c -> (recip $ fromIntegral i) * c) [1..] . polyCoefs
+
+{- TODO: integral/derivativeOrder defs
 -- pad if n < 0, drop if n > 0
 padrop n v xs | n < 0 = replicate (-n) v ++ xs
 padrop n v xs = drop n xs
 
-{-
 derivative order = Poly $ padrop order 0 . polyCoefs
   where mults = map (\i -> product [i..i+order]) [1..]
 -}

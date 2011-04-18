@@ -16,3 +16,5 @@ if [[ $? -ne 0 ]]; then
   exit
 fi
 ./Main
+rm Main
+

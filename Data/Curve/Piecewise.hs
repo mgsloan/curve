@@ -125,6 +125,11 @@ instance (Multiplicable a, Precision (Domain a), Portionable a,
  => Multiplicable (Pw a) where
     (^*^) = zipPw (^*^)
 
+instance (Dividable a, Precision (Domain a), Portionable a,
+  DomainBounds a ~ I.Interval (Domain a), Eq a)
+ => Dividable (Pw a) where
+    (^/^) = zipPw (^/^)
+
 instance (Offsetable a, Precision (Domain a))
  => Offsetable (Pw a) where
     offset (Just x) = mapPw (offset x)

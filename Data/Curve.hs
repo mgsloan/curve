@@ -23,7 +23,6 @@ module Data.Curve
   , module Data.Curve.Const
   , module Data.Curve.Conversions
   , module Data.Curve.D2
-  , module Data.Curve.Draw
   , module Data.Curve.Function
   , module Data.Curve.Linear
   , module Data.Curve.Math
@@ -32,6 +31,7 @@ module Data.Curve
   , module Data.Curve.SBasis
   -- module Data.Curve.Periodic
   -- module Data.Curve.Concat
+  , module Data.VectorSpace
   ) where
 
 import Data.Curve.Bezier
@@ -39,10 +39,11 @@ import Data.Curve.Classes
 import Data.Curve.Const
 import Data.Curve.Conversions
 import Data.Curve.D2
-import Data.Curve.Draw
 import Data.Curve.Function
 import Data.Curve.Linear
 import Data.Curve.Math
 import Data.Curve.Piecewise
 import Data.Curve.Poly
 import Data.Curve.SBasis
+
+import Data.VectorSpace

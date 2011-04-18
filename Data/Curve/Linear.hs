@@ -24,9 +24,8 @@ import Data.VectorSpace
 
 data Linear a = Linear a a deriving (Show, Eq)
 
--- lift1
-linmap :: (a -> a) -> Linear a -> Linear a
-linmap func (Linear f t) = Linear (func f) (func t)
+instance Functor Linear where
+  fmap f (Linear fr to) = Linear (f fr) (f to)
 
 lin2map :: (a -> a) -> (a -> a) -> Linear a -> Linear a
 lin2map f1 f2 (Linear f t) = Linear (f1 f) (f2 t)
@@ -64,20 +63,27 @@ instance (Precision a) => Portionable (Linear a) where
     portion i l = Linear (l `at` I.inf i) (l `at` I.sup i)
 
 instance (Num a) => Offsetable (Linear a) where
-    offset x = linmap (+x)
+    offset x = fmap (+x)
 
 instance (Num a)  => AdditiveGroup (Linear a) where
     zeroV = Linear 0 0 
     (^+^) = linzip (+)
-    negateV = linmap (negate)
+    negateV = fmap negate
 
 instance (Num a) => VectorSpace (Linear a) where
     type Scalar (Linear a) = a
-    (*^) s = linmap (s*)
+    (*^) s = fmap (s*)
 
 instance (Num a) => Composable (Linear a) (Linear a) where
     type CompositionType (Linear a) (Linear a) = Linear a
     compose f (Linear fr to) = Linear (f `at` fr) (f `at` to)
+
+instance (Num a) => Differentiable (Linear a) where
+    derivative (Linear f t) = Linear val val
+      where val = t - f
+
+lindelt (Linear f t) = t - f
+linmean (Linear f t) = (t + f) / 2
 
 {-
 instance (RealFloat a) => InverseBounds (Linear a) where

@@ -31,6 +31,9 @@ data SBasis a = SBasis { sbasisCoefs :: [Linear a] } deriving (Eq, Show)
 
 modCoefs f (SBasis xs) = SBasis (f xs)
 
+-- Not really that useful for sbasis.
+-- instance Functor SBasis where fmap f = modCoefs (map (fmap f))
+
 lift1 f = modCoefs (map f)
 
 lift2 f d (SBasis xs) (SBasis ys) = SBasis $ zipWithDefault f d xs ys
@@ -86,8 +89,6 @@ instance (Num a) => Offsetable (SBasis a) where
     offset o (SBasis (x:xs)) = SBasis ((offset o x):xs)
 
 eachShift f xs ys = map (zipWith f xs) (inits ys)
-lindelt (Linear f t) = t - f
-linmean (Linear f t) = (t + f) / 2
 linconst :: (RealFloat a) => a -> Linear a
 linconst = toLinear . Const
 sbconst :: (RealFloat a) => a -> SBasis a
@@ -109,15 +110,17 @@ indices0, indices1 :: RealFloat a => [a]
 indices0 = map fromIntegral [0::Int ..]
 indices1 = map fromIntegral [1::Int ..]
 
+instance (RealFloat a, IsZero a) => Differentiable (SBasis a) where
+    derivative (SBasis xs) = SBasis $ zipWith (\d -> lin2map (d+) (d-)) ds delts
+      where ds = zipWith (\k -> ((2*k+1)*) . lindelt) indices0 xs
+            delts = zipWith (*^) indices1 $ (++[toLinear$Const 0]) $ tail xs
+
 instance (RealFloat a, IsZero a) => Integrable (SBasis a) where
     integral (SBasis xs) = normalizeSB . SBasis $ zipWith linmw mids delts
       where mids = (0:) . zipWith (\k -> (/(2 * k))) indices1 $ map lindelt xs
             delts = scanr (\(ix, l) c -> (linmean l + (ix+1) * c / 2) / (2 * ix + 1)) 0 $ zip indices0 xs
             linmw mid delt = Linear (mid - delt / 2) (mid + delt / 2)
 
-    derivative (SBasis xs) = SBasis $ zipWith (\d -> lin2map (d+) (d-)) ds delts
-      where ds = zipWith (\k -> ((2*k+1)*) . lindelt) indices0 xs
-            delts = zipWith (*^) indices1 $ (++[toLinear$Const 0]) $ tail xs
 
 -- TODO: better implementation
 instance (Precision a) => Rootable (SBasis a) where
