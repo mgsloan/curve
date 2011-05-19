@@ -99,6 +99,7 @@ instance (RealFloat a) => Multiplicable (SBasis a) where
       where tris = map (map (linconst . negate)) $
                    eachShift (*) (map lindelt xs) (map lindelt ys)
             muls = eachShift (linzip (*)) xs ys
+    mult1 = SBasis [Linear 1 1]
 
 instance (RealFloat a) => Composable (SBasis a) (SBasis a) where
     type CompositionType (SBasis a) (SBasis a) = SBasis a

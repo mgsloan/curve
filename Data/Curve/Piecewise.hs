@@ -91,7 +91,10 @@ instance (IsFinite a, Curve a) => IsFinite (Pw a) where
 instance (IsZero a, Curve a)   => IsZero   (Pw a) where
     isZero     = all isZero     . segs
 
-constantPw = Pw ((-1) / 0) . maybe [] (\x -> [(Linear x x, 1 / 0)])
+infPw :: (Curve a, Fractional (Domain a)) => Maybe a -> Pw a
+infPw = Pw ((-1) / 0) . maybe [] (\x -> [(x, 1 / 0)])
+unitPw :: (Curve a, Fractional (Domain a)) => Maybe a -> Pw a
+unitPw = Pw 0 . maybe [] (\x -> [(x, 1)])
 
 instance (FunctionBounds a, Portionable a, 
   Precision (Domain a), Precision (Codomain a),
@@ -124,6 +127,7 @@ instance (Multiplicable a, Precision (Domain a), Portionable a,
   DomainBounds a ~ I.Interval (Domain a), Eq a)
  => Multiplicable (Pw a) where
     (^*^) = zipPw (^*^)
+    mult1 = infPw (Just mult1)
 
 instance (Dividable a, Precision (Domain a), Portionable a,
   DomainBounds a ~ I.Interval (Domain a), Eq a)

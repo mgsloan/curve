@@ -30,9 +30,12 @@ Library
     Data.Curve.D2
     Data.Curve.Function
     Data.Curve.Interval
+    Data.Curve.Rect
     Data.Curve.Linear
     Data.Curve.Math
     Data.Curve.Piecewise
     Data.Curve.Poly
     Data.Curve.SBasis
     Data.Curve.Util
+
+  ghc-options:       -Wall

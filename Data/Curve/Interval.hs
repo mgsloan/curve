@@ -11,9 +11,9 @@
 -- Implementation of 1-D intervals.  Rather than implementing an additional
 -- class for bounding boxes, we utilize the two-dimensional lifter.
 -- Based on Edward Kmett's intervals-0.1.3 package defining
--- Numeric.Interval
+-- Numeric.Interval (later versions got rid of rounding mode stuff)
 
-{-# LANGUAGE Rank2Types, TypeFamilies, TupleSections #-} 
+{-# LANGUAGE Rank2Types, TypeFamilies, TupleSections, DeriveDataTypeable #-} 
 
 module Data.Curve.Interval 
     ( Interval(..)
@@ -31,6 +31,7 @@ module Data.Curve.Interval
     , intersection
     , hull
     , bisection
+    , midpoint
     , magnitude
     , mignitude
     , contains
@@ -57,6 +58,7 @@ import Prelude hiding (null, elem, notElem)
 
 import Data.Curve.Classes
 import Data.Curve.Util (sweep)
+import Data.Data
 
 import Algebra.Lattice
 import Numeric.Extras
@@ -68,6 +70,7 @@ import Data.List (sort, delete, sortBy)
 import Data.Ord (comparing)
 
 data Interval a = I !(Round Down a) !(Round Up a)
+  deriving (Typeable)
 
 infix 3 ...
 
@@ -603,7 +606,7 @@ overlaps = concat . sweep handler [] . sortBy (comparing eventMetric) . concatMa
 overlapsBetween :: (Precision a, Eq b) => 
     [(Interval a, b)] -> [(Interval a, b)] -> [(Interval a, b, b)] 
 overlapsBetween xs ys = concat . sweep handler ([], []) $ 
-      sortBy (comparing $ eventMetric.snd) $
+      sortBy (comparing $ eventMetric . snd) $
       concatMap (map (False,) . events) xs ++ 
       concatMap (map (True,)  . events) ys 
     where handler (b, (x, True, f, t)) 

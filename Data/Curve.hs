@@ -25,6 +25,7 @@ module Data.Curve
   , module Data.Curve.D2
   , module Data.Curve.Function
   , module Data.Curve.Linear
+  , module Data.Curve.Rect
   , module Data.Curve.Math
   , module Data.Curve.Piecewise
   , module Data.Curve.Poly
@@ -41,6 +42,7 @@ import Data.Curve.Conversions
 import Data.Curve.D2
 import Data.Curve.Function
 import Data.Curve.Linear
+import Data.Curve.Rect
 import Data.Curve.Math
 import Data.Curve.Piecewise
 import Data.Curve.Poly

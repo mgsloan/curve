@@ -30,6 +30,7 @@ module Data.Curve.Classes
   , Dividable(..)
   , Offsetable(..)
   , Pow(..)
+  , Trig(..)
   , ToSBasis(..)
   , ToBezier(..)
   , ToPoly(..)
@@ -147,17 +148,32 @@ class (Curve a, Curve b {- Domain a ~ Codomain b -} ) => Composable a b where
 -- | Closed multiplication.
 class Multiplicable a where
     (^*^) :: a -> a -> a
+    mult1 :: a
 
 -- | Closed division / reciprocal.
 class (Multiplicable a) => Dividable a where
     reciprocal :: a -> a
     (^/^) :: a -> a -> a
     a ^/^ b = a ^*^ (reciprocal b)
+    reciprocal = (mult1 ^/^)
 
-instance Multiplicable Float  where (^*^) = (*)
+-- TODO: Template haskell + make Float / Double equiv to const curves
+instance Multiplicable Float  where (^*^) = (*); mult1 = 1
 instance Dividable     Float  where (^/^) = (/)
-instance Multiplicable Double where (^*^) = (*)
+instance Multiplicable Double where (^*^) = (*); mult1 = 1
 instance Dividable     Double where (^/^) = (/)
+
+--instance (RealFloat a) => Trig a where
+
+class Trig a where
+    type Angle a
+    sine, cosine, tangent :: Angle a -> a
+    arcsine, arcosine, arctangent :: a -> Angle a
+
+instance (RealFloat a) => Trig a where
+    type Angle a = a
+    sine = sin; cosine = cos; tangent = tan
+    arcsine = asin; arcosine = acos; arctangent = atan
 
 -- | Yields a representation of the output-offset of a curve.
 class (Curve a) => Offsetable a where

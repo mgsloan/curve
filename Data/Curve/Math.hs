@@ -16,10 +16,14 @@ module Data.Curve.Math
  ( isConstant
  , extrema, extremaBounds, criticalPoints
  , nearest, nearestPw
- , arcLength, unitSpeed, curveOffset, curveAlong
+ , dist, normalize, arcLength, unitSpeed, curveOffset, curveAlong
+ , toPolar, fromPolar, toPolarPnt, fromPolarPnt
+ , lineInterTime, linInterTime, segInterTime, raySegInterTime
  ) where
 
-import Control.Arrow(first, second, (&&&))
+import Control.Arrow (first, second, (&&&))
+import Control.Monad (mfilter)
+import Data.Function (on)
 import Data.Ord (comparing)
 import Data.List (minimumBy, sortBy)
 import Data.VectorSpace
@@ -27,6 +31,7 @@ import Data.NumInstances
 
 import Data.Curve.Classes
 import Data.Curve.D2 (dot, rotCW)
+import Data.Curve.Linear
 import Data.Curve.Piecewise
 import qualified Data.Curve.Interval as I
 import Data.Curve.Util
@@ -81,19 +86,59 @@ nearestFurthest ivl c p
   where c' = derivative c
         c0 = (0, c `at` 0)
 
-dist (x, y) = pow 0.5 $ x ^*^ x ^+^ y ^*^ y
+dist (x, y) = pow 0.5 $ (pow 2 x) ^+^ (pow 2 x)
+--dist (x, y) = pow 0.5 $ x ^*^ x ^+^ y ^*^ y
 
 normalize p = p ^/^ (d, d)
   where d = dist p
 
-arcLength :: (Integrable a, AdditiveGroup a, Multiplicable a, Pow a, Fractional (Codomain a))
+arcLength :: (Integrable a, AdditiveGroup a, Pow a, Fractional (Codomain a))
   => (a, a) -> a
 arcLength = integral . dist . derivative
 
-unitSpeed :: (Integrable a, AdditiveGroup a, Multiplicable a, Pow a,
+unitSpeed :: (Integrable a, AdditiveGroup a, Pow a,
   Invertible a, Fractional (Codomain a), Composable (a, a) (InverseType a))
   => (a, a) -> CompositionType (a, a) (InverseType a)
 unitSpeed p = compose p . inverse $ arcLength p
 
 curveOffset x p = x  *^ (normalize . rotCW $ derivative p) ^+^ p
 curveAlong  c p = c ^*^ (normalize . rotCW $ derivative p) ^+^ p
+
+
+toPolar :: (Trig a, Pow a, AdditiveGroup a, Fractional (Codomain a), Dividable a) =>
+  (a, a) -> (a, Angle a)
+toPolar = dist &&& (arctangent . uncurry (^/^))
+fromPolar :: (Trig a, Multiplicable a) =>
+  (a, Angle a) -> (a, a)
+fromPolar (d, t) = (cosine t ^*^ d, sine t ^*^ d)
+
+-- Temporary. TODO: remove
+toPolarPnt :: (Double, Double) -> (Double, Double)
+toPolarPnt = (\(x, y) -> sqrt $ x * x + y * y) &&& uncurry atan2
+fromPolarPnt (d, t) = (cos t * d, sin t * d)
+
+-- | Determinant of the matrix
+-- [ a b ]
+-- [ c d ]
+det a b c d = a * d - b * c
+detpnt (a, b) (c, d) = det a b c d
+
+lineInterTime o1 v1 o2 v2
+  --TODO: maybe check if detpnt v1 v2 `isNear` 0 ?
+    | isNaN sc  = Nothing
+    | otherwise = Just $ sc *^ (detpnt b v2, detpnt b v1)
+  where sc = recip $ detpnt v1 v2
+        b  = o2 ^-^ o1
+
+linInterTime l1 l2 = lineInterTime o1 v1 o2 v2
+  where v1 = mapT lindelt l1; v2 = mapT lindelt l2
+        o1 = l1 `at` 1; o2 = l2 `at` 1
+
+--TODO: special cases for initial / final points.  Detect infinite soln.
+segInterTime l1 l2 =
+  mfilter (\(t1, t2) -> t1 < 0 || t1 > 1 || t2 < 0 || t2 > 1)
+          (linInterTime l1 l2)
+
+raySegInterTime l1 l2 =
+  mfilter (\(t1, t2) -> t1 < 0 || t2 < 0 || t2 > 1)
+          (linInterTime l1 l2)

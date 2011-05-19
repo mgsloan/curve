@@ -23,7 +23,6 @@ import Data.Maybe (fromJust)
 import Data.VectorSpace
 import Control.Arrow ((***), (&&&))
 
-
 --instance (Set a, Set b) => Set (a, b) where
 --  type Element (a, b) = (Element a, Element b)
 --  union (x, y) = (union x) *** (union y)
@@ -74,6 +73,7 @@ instance Composable a b => Composable (a, a) b where
 
 instance Multiplicable a => Multiplicable (a, a) where
   (^*^) = zipT (^*^)
+  mult1 = (mult1, mult1)
 
 instance Dividable a => Dividable (a, a) where
   reciprocal = mapT reciprocal
@@ -90,5 +90,7 @@ rotCW, rotCCW :: (AdditiveGroup a) => (a, a) -> (a, a)
 rotCW (x, y) = (negateV y, x)
 rotCCW (x, y) = (y, negateV x)
 
-
+-- rotate by angle
 --rot :: (VectorSpace a) => Scalar a -> (a, a)
+
+--TODO: generalized transforms / matrix stuff
