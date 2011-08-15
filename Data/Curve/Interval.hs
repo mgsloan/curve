@@ -64,7 +64,6 @@ import Algebra.Lattice
 import Numeric.Extras
 import Numeric.Rounding
 import Control.Arrow 
-import Data.Either (partitionEithers)
 import Data.Function (on)
 import Data.List (sort, delete, sortBy)
 import Data.Ord (comparing)
@@ -509,7 +508,7 @@ idouble = id
 ifloat :: Interval Float -> Interval Float
 ifloat = id
 
--- Michael Sloan
+-- Michael Sloan's additions
 
 --TODO: look into these / add tests
 -- Bugs:
@@ -585,7 +584,10 @@ fromList xs = head sorted ... last sorted
     where sorted = sort xs
 
 -- Helper for overlaps and overlapsBetween.
+events :: (Interval t1, t) -> [(t, Bool, t1, t1)]
 events ((I (Round f) (Round t)), x) = [(x, False, f, t), (x, True, f, t)]
+
+eventMetric :: (t, Bool, t1, t1) -> (t1, Bool)
 eventMetric (_, b, f, t) = (if b then t else f, b)
 
 --TODO: use more efficient data structures for context storage.

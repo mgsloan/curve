@@ -38,7 +38,7 @@ module Data.Curve
 import Data.Curve.Bezier
 import Data.Curve.Classes
 import Data.Curve.Const
-import Data.Curve.Conversions
+import Data.Curve.Conversions()
 import Data.Curve.D2
 import Data.Curve.Function
 import Data.Curve.Linear
