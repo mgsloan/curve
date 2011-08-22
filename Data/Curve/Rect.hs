@@ -63,5 +63,9 @@ extendR = zipT extend
 extentR :: (Precision a) => (Interval a, Interval a) -> (a, a)
 extentR = mapT extent
 
-expandR :: (Precision a) => (a, a) -> (Interval a, Interval a) -> (Interval a, Interval a)
+expandR, moveR :: (Precision a) => (a, a) -> (Interval a, Interval a) -> (Interval a, Interval a)
 expandR = zipT expand
+moveR v = zipT (+) (mapT singleton v)
+
+singletonR :: (Precision a) => (a, a) -> (Interval a, Interval a)
+singletonR = mapT singleton
