@@ -81,7 +81,7 @@ instance (Num a) => AdditiveGroup (SBasis a) where
     negateV = lift1 negateV
 
 instance (Num a) => VectorSpace (SBasis a) where
-    type Data.VectorSpace.Scalar (SBasis a) = a
+    type Scalar (SBasis a) = a
     (*^) s = lift1 (s*^)
 
 instance (Num a) => Offsetable (SBasis a) where

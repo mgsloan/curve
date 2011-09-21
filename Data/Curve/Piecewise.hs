@@ -23,6 +23,7 @@ import Algebra.Lattice
 import Control.Arrow (first, second)
 import Data.Maybe (fromJust)
 import Data.VectorSpace
+import qualified Data.VectorSpace as VS
 import Numeric.Rounding
 
 -- (seg, time) means that the seg holds for prev_time <= t < time
@@ -117,10 +118,11 @@ instance (AdditiveGroup a, Portionable a, Precision (Domain a),
     (^+^) = zipPw (^+^)
     negateV = mapPw negateV
 
+
 instance (VectorSpace a, Precision (Domain a), Portionable a,
   DomainBounds a ~ I.Interval (Domain a), Eq a)
  => VectorSpace (Pw a) where
-    type Data.VectorSpace.Scalar (Pw a) = Scalar a
+    type Scalar (Pw a) = Scalar a
     (*^) s = mapPw (s*^)
 
 instance (Multiplicable a, Precision (Domain a), Portionable a,
